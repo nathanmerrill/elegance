@@ -1,0 +1,19 @@
+class Order(customer: Customer) {
+
+	option country=customer.country;
+	items: Map<Item, Int[Positive]>;
+
+	fun addItem(item: Item) {
+		option quantity: Int[Positive]=1
+		items[item] = quantity
+	}
+
+	mut fun getCount(item: Item): Int<Positive>? {
+		items[item]
+	}
+
+	append(item: Item) {
+		//Code that adds to the list
+	}
+
+}

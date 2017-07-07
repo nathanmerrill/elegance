@@ -1,0 +1,69 @@
+package kothcomm:game    //Modules are named:  "kothcomm" is the name for the module "com.nmerrill.kothcomm"
+
+import communication.Downloader  // No module is necessary for local packages, equivalent to kothcomm:communication.Downloader
+import communication.LanguageLoader
+import communication.languages.Language
+import communication.languages.local.LocalJavaLoader
+import game.games.AbstractGame
+import game.players.AbstractPlayer
+import game.players.Submission
+import game.scoring.Aggregator
+import game.scoring.ItemAggregator
+import game.scoring.Scoreboard
+import game.tournaments.Sampling
+import game.tournaments.Tournament
+import ui.text.TextUI
+
+import core:Random  // core is the built-in module
+import core:IO
+
+class KotHComm<Player, Game>(gameSupplier: Void->Game, gameSize: Int[greaterThan(1)])  //No use of <T,U>, type parameters should be readable
+    where Player: AbstractPlayer*    //Similar to Player extends AbstractPlayer
+    where Game: AbstractGame<Player>  //Doesn't necessarily have to be the first thing in the class
+    where PlayerSubmission: Submission<Player>  //This isn't a type parameter, but "renames" Submission<Player> to PlayerSubmission
+{
+    val mut localLoader: LocalJavaLoader<Player>;  //val means the reference doesn't change, mut means that the object can be mutated, private is implied
+
+    option languages: Language<Game>* = [];  //This one is not required because it has a default value
+    option scorer: Scoreboard<PlayerSubmission>*->Scoreboard<PlayerSubmission> = ItemAggregator.new();
+        //Types!  The above is a function that takes an iterable of Scoreboard<PlayerSubmission> and returns a Scoreboard<PlayerSubmission>
+        //ItemAggregator.new() is a constructor call, which means that ItemAggregator implements the above function
+    option tournamentSupplier: (PlayerSubmission*, Random)->Tournament<PlayerSubmission> = Sampling.new;
+        //Function references can be generated using Sampling.new
+    option printer: Printer = TextUI.new();
+    option mut random: Random;
+    option numIterations: Int = 100;
+    option questionId: Int? = null;
+        //   ? indicates an optional/nullable type
+
+
+    fun addSubmission(mut self: Self, name: String, playerSupplier: Void->Player): Void
+        = self.localLoader.register(name, playerSupplier);
+        // This function takes two named parameters, and passes them onto localLoader.register
+        // LocalLoader.register *does* require named parameters, but because the paramter names match the argument names, no naming is required (you could write name=name if you wanted to)
+        // mut self  indicates that the function is impure because it mutates the object
+        // You should also shorten the above by doing `fun addSubmission = localLoader.register`
+
+
+    fun impure run(): Void  //This function is impure because it uses STDOUT and accesses the network.
+    {
+        val loader = LanguageLoader<Player>.new([localLoader]+languages);  //List addition!
+
+        if questionId do
+            Downloader.downloadQuestions(loader, questionId);
+        end
+
+        val players = loader.load();
+        val tournament = tournamentSupplier(players, random);  //To call a function, you simply add the parenthesis
+        val mut runner = TournamentRunner.new(tournament, aggregator, gameSize, gameSupplier, random);  //We'll mutate the runner later, so we need to declare it
+        printer.printStart();
+        for i in range(numIterations) do
+            printer.printProgress(i, totalIterations);
+            runner.createGame().run();  //createGame mutates the runner
+        end
+        printer.printFinished();
+        printer.printScoreboard(runner.scoreboard());  //This also requires a name parameter, scoreboard, but because the method call is `scoreboard`, it isn't needed
+    }
+}
+
+KotHComm.new(MyGame.new, gameSize = 2)  //Creates a KotHComm.
