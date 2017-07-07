@@ -7,3 +7,5 @@ Elegance is a language that believes that the best language is the one you write
 3. Descriptive types.  Instead of having a `List<Pair<Int, Int>>`, you have a `(Int, Int)*`
 
 This language is currently in development.  The first iteration of the grammar is complete, and progress is being made on an IR.
+
+Gradle is required to build the project.  To generate the grammar, run `gradle generateGrammarSource`
