@@ -40,8 +40,7 @@ class KotHComm<Player, Game>(gameSupplier: Void->Game, gameSize: Int[greaterThan
     fun addSubmission(mut self: Self, name: String, playerSupplier: Void->Player): Void
         = self.localLoader.register(name, playerSupplier);
         // This function takes two named parameters, and passes them onto localLoader.register
-        // LocalLoader.register *does* require named parameters, but because the paramter names match the argument names, no naming is required (you could write name=name if you wanted to)
-        // mut self  indicates that the function is impure because it mutates the object
+        // mut self indicates that the function is impure because it mutates itself
         // You should also shorten the above by doing `fun addSubmission = localLoader.register`
 
 
@@ -66,4 +65,4 @@ class KotHComm<Player, Game>(gameSupplier: Void->Game, gameSize: Int[greaterThan
     }
 }
 
-KotHComm.new(MyGame.new, gameSize = 2)  //Creates a KotHComm.
+KotHComm.new(MyGame.new, gameSize = 2);  //Creates a KotHComm.

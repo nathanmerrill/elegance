@@ -6,6 +6,7 @@ import com.google.common.reflect.ClassPath;
 import com.google.inject.Inject;
 import com.nmerrill.elegance.TestModule;
 import com.nmerrill.elegance.generation.EleganceParserFactory;
+import com.nmerrill.elegance.generation.EleganceWalker;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
@@ -19,6 +20,9 @@ public class GrammarTest {
 
     @Inject
     private EleganceParserFactory parser;
+
+    @Inject
+    private EleganceWalker walker;
 
     @DataProvider(name = "sampleCode")
     public Object[][] sampleCode() throws IOException {
@@ -36,10 +40,17 @@ public class GrammarTest {
 
 
     /**
-     * Iterates over all test code, and ensures that the grammar can still handle it
+     * Iterates over all test code, and ensures that we can convert it into the IR
      */
     @Test(dataProvider = "sampleCode")
-    public void testSampleCode(String code){
-        parser.getParser(code).prog();
+    public void testIR(String code){
+        try {
+            walker.visitFile(parser.getParser(code).file());
+        } catch (Exception e){
+            e.printStackTrace();
+            throw e;
+        }
     }
+
+
 }

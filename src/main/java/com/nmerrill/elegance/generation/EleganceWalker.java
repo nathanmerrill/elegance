@@ -37,7 +37,9 @@ public class EleganceWalker extends EleganceBaseVisitor<Object>
     @Override
     public ModulePath visitFile_import(EleganceParser.File_importContext ctx) {
         ModulePath modulePath = new ModulePath();
-        modulePath.module = ctx.module.toString();
+        if (ctx.module != null) {
+            modulePath.module = ctx.module.toString();
+        }
         modulePath.path = visitPackage_path(ctx.package_path());
         return modulePath;
     }

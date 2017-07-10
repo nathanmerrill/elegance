@@ -25,12 +25,12 @@ ele_class :
     CLOSE_CURLY;
 
 function:
-    FUNCTION_DECLARATION IDENTIFIER parameter_list 
+    FUNCTION_DECLARATION IMPURE_DECLARATION? IDENTIFIER parameter_list
     COLON type
     (MUTABLE_DECLARATION OPEN_PAREN (variable_reference (COMMA variable_reference)*)? CLOSE_PAREN)?
     (
         OPEN_CURLY (function | statement)* CLOSE_CURLY |
-        EQUAL function_call
+        EQUAL expression SEMICOLON
     );
 
 ele_enum:
@@ -50,13 +50,11 @@ assignment:
     SEMICOLON;
 
 statement:
-    (function_call | assignment | statement_if | ele_for);
+    (assignment | statement_if | ele_for | RETURN_DECLARATION? expression SEMICOLON);
 
 statement_if: IF expression DO statement* (ELSE statement*)? END;
 expression_if: IF expression DO expression ELSE expression END;
 ele_for: FOR_LOOP IDENTIFIER IN expression DO statement* END;
-
-function_call: expression argument_list SEMICOLON;
 
 argument_list:
     OPEN_PAREN 
@@ -80,7 +78,7 @@ parameter_list:
     CLOSE_PAREN;
 
 parameter:
-    expression 
+    MUTABLE_DECLARATION? expression
     (COLON type)?;
 
 type:
@@ -160,6 +158,8 @@ IMPORT_DECLARATION: 'import' ;
 WHERE_DECLARATION: 'where' ;
 MUTABLE_DECLARATION: 'mut' ;
 ENUM_DECLARATION: 'enum' ;
+IMPURE_DECLARATION: 'impure' ;
+RETURN_DECLARATION: 'return' ;
 
 OPEN_CURLY: '{' ;
 CLOSE_CURLY: '}' ;

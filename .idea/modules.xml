@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/elegance.iml" filepath="$PROJECT_DIR$/.idea/modules/elegance.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/elegance_main.iml" filepath="$PROJECT_DIR$/.idea/modules/elegance_main.iml" group="elegance" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/elegance_test.iml" filepath="$PROJECT_DIR$/.idea/modules/elegance_test.iml" group="elegance" />
+    </modules>
+  </component>
+</project>
